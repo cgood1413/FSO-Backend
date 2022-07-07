@@ -29,14 +29,9 @@ let contacts = [
 ];
 
 app.use(cors());
-
 app.use(express.json());
-
+app.use(express.static('build'))
 app.use(morgan('tiny'));
-
-app.get("/", (req, res) => {
-  res.send("Express app working!");
-});
 
 app.get("/api/contacts", (req, res) => {
   res.json(contacts);
