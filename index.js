@@ -1,9 +1,10 @@
 const { response } = require("express");
 const express = require("express");
 const morgan = require('morgan');
-const app = express();
-const PORT = 3001;
+const cors = require('cors');
 
+const app = express();
+const PORT = process.env.PORT || 3001;
 let contacts = [
   {
     id: 1,
@@ -26,6 +27,8 @@ let contacts = [
     number: "39-23-6423122",
   },
 ];
+
+app.use(cors());
 
 app.use(express.json());
 
@@ -58,6 +61,16 @@ app.post("/api/contacts", (req, res) => {
   contact.id = id + 1;
   contacts = contacts.concat(contact);
   res.status(200).json(contact);
+});
+
+app.put("/api/contacts/:id", (req, res) => {
+  const id = Number(req.params.id);
+  let contact = contacts.find(contact => contact.id === id);
+  if (contact) {
+    contact = {...contact, number: req.body.number}
+    return res.json(contact);
+  }
+  res.status(404).send(`No contacts found with ID of ${id}`);
 });
 
 app.get("/api/contacts/:id", (req, res) => {
