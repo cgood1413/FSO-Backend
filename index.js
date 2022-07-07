@@ -1,5 +1,6 @@
 const { response } = require("express");
 const express = require("express");
+const morgan = require('morgan');
 const app = express();
 const PORT = 3001;
 
@@ -27,6 +28,8 @@ let contacts = [
 ];
 
 app.use(express.json());
+
+app.use(morgan('tiny'));
 
 app.get("/", (req, res) => {
   res.send("Express app working!");
@@ -61,7 +64,7 @@ app.get("/api/contacts/:id", (req, res) => {
   const id = Number(req.params.id);
   const contact = contacts.find((contact) => contact.id === id);
   if (contact) {
-    res.json(contact);
+    return res.json(contact);
   }
   res.status(404).send(`No contacts found with ID of ${id}`);
 });
