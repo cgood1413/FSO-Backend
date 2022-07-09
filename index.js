@@ -1,34 +1,33 @@
-require("dotenv").config();
-const express = require("express");
-const morgan = require("morgan");
-const cors = require("cors");
-const Contact = require("./models/contact");
-const { response } = require("express");
+require('dotenv').config();
+const express = require('express');
+const morgan = require('morgan');
+const cors = require('cors');
+const Contact = require('./models/contact');
 
 const app = express();
 const PORT = process.env.PORT;
 
 app.use(cors());
-app.use(express.static("build"));
+app.use(express.static('build'));
 app.use(express.json());
-app.use(morgan("tiny"));
+app.use(morgan('tiny'));
 
-app.get("/api/contacts", (req, res) => {
+app.get('/api/contacts', (req, res) => {
   Contact.find({}).then((contacts) => {
     res.json(contacts);
   });
 });
 
-app.post("/api/contacts", (req, res, next) => {
+app.post('/api/contacts', (req, res, next) => {
   const { name, number } = req.body;
-  const contact = new Contact({name, number});
+  const contact = new Contact({ name, number });
 
   contact.save().then((savedContact) => {
     res.status(200).json(savedContact);
   }).catch(err => next(err));
 });
 
-app.get("/api/contacts/:id", (req, res, next) => {
+app.get('/api/contacts/:id', (req, res, next) => {
   Contact.findById(req.params.id)
     .then((contact) => {
       if (contact) {
@@ -40,7 +39,7 @@ app.get("/api/contacts/:id", (req, res, next) => {
     .catch((err) => next(err));
 });
 
-app.put("/api/contacts/:id", (req, res, next) => {
+app.put('/api/contacts/:id', (req, res, next) => {
   const { name, number } = req.body;
   Contact.findByIdAndUpdate(req.params.id, { name, number }, { new: true })
     .then((updatedContact) => {
@@ -49,7 +48,7 @@ app.put("/api/contacts/:id", (req, res, next) => {
     .catch((err) => next(err));
 });
 
-app.delete("/api/contacts/:id", (req, res, next) => {
+app.delete('/api/contacts/:id', (req, res, next) => {
   Contact.findByIdAndRemove(req.params.id)
     .then((response) => {
       res.status(204).end();
@@ -59,10 +58,10 @@ app.delete("/api/contacts/:id", (req, res, next) => {
 
 const errHandler = (err, req, res, next) => {
   console.error(err.message);
-  if (err.name === "CastError") {
-    return res.status(400).send({ error: "Malformatted ID" });
+  if (err.name === 'CastError') {
+    return res.status(400).send({ error: 'Malformatted ID' });
   } else if (err.name === 'ValidationError'){
-    return res.status(400).send({error: err.message});
+    return res.status(400).send({ error: err.message });
   }
   next(err);
 };
