@@ -19,13 +19,13 @@ app.get("/api/contacts", (req, res) => {
   });
 });
 
-app.post("/api/contacts", (req, res) => {
+app.post("/api/contacts", (req, res, next) => {
   const { name, number } = req.body;
   const contact = new Contact({name, number});
 
   contact.save().then((savedContact) => {
     res.status(200).json(savedContact);
-  });
+  }).catch(err => next(err));
 });
 
 app.get("/api/contacts/:id", (req, res, next) => {
@@ -61,6 +61,8 @@ const errHandler = (err, req, res, next) => {
   console.error(err.message);
   if (err.name === "CastError") {
     return res.status(400).send({ error: "Malformatted ID" });
+  } else if (err.name === 'ValidationError'){
+    return res.status(400).send({error: err.message});
   }
   next(err);
 };
